@@ -1,45 +1,41 @@
 package data
 
 import (
-	"fmt"
+	"encoding/json"
 	"testing"
-	"time"
 )
 
 func TestData(t *testing.T) {
 	md := mockData()
-	go func() {
-		md.Add("مَرْحَبًا", "Hello")
-		fmt.Println("1, I'm done")
-	}()
-	go func() {
-		md.Add("مَرْحَبًا", "Hello")
-		fmt.Println("2, I'm done")
-	}()
-	go func() {
-		md.Add("مَرْحَبًا", "Hello")
-		fmt.Println("3, I'm done")
-	}()
-	// err := md.Add("مَرْحَبًا", "Hello")
-	// t.Log(err)
-	time.Sleep(10*time.Second)
+	t.Logf("%+v", md)
+	d, err := json.Marshal(md)
+	t.Logf("%+s, %v", d, err)
 }
 
-func mockData() Vocabs {
-	return Vocabs{
-		Words: []Vocab{
-			{1, "مرحبًا", "Hello"},
-			{2, "شكرًا", "Thank you"},
-			{3, "ماء", "Water"},
-			{4, "سماء", "Sky"},
-			{5, "كتاب", "Book"},
-		},
+func mockData() vocabs {
+	v := []vocab{
+		{1, "مرحبًا", "Hello"},
+		{2, "شكرًا", "Thank you"},
+		{3, "ماء", "Water"},
+		{4, "سماء", "Sky"},
+		{5, "كتاب", "Book"},
 	}
+
+	vo := vocabs{}
+	for _, v := range v {
+		err := vo.add(v.Arabic, v.English)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return vo
+
 }
 
-func _mockDataWithHarakats() Vocabs {
-	return Vocabs{
-		Words: []Vocab{
+func _mockDataWithHarakats() vocabs {
+	return vocabs{
+		Words: []vocab{
 			{1, "مَرْحَبًا", "Hello"},
 			{2, "شُكْرًا", "Thank you"},
 			{3, "مَاء", "Water"},
