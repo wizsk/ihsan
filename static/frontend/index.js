@@ -1,5 +1,5 @@
-// idk man ai line kaj kore na jani kn
-const vocabs = document.querySelectorAll("[data-id]");
+// yo js :)
+const vocabs = document.querySelectorAll("[data-remove]");
 const vocabForm = document.getElementById("vocab-form");
 const ar = document.getElementById("arabic");
 const eng = document.getElementById("english");
@@ -7,7 +7,7 @@ const vocabFormErr = document.getElementById("vocab-form-err-div");
 
 vocabs.forEach(e => {
     e.addEventListener("click", () => {
-        const id = e.getAttribute("data-id");
+        const id = e.getAttribute("data-remove");
         fetch(`/api/remove?id=${id}`, {
             method: "POST",
         }).then((res) => {
@@ -51,7 +51,7 @@ vocabForm.addEventListener("submit", async e => {
 
     if (!res.ok) {
         let msg = await res.json();
-        vocabFormErr.innerText = msg.err;
+        vocabFormErr.innerHTML = `<span style="color:red">err: ${msg.err}</span>`;
     } else {
         if (res.redirected) {
             window.location.href = "/";

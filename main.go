@@ -43,7 +43,7 @@ func main() {
 			fmt.Println("/api/add", r.RemoteAddr)
 			if err := db.Add(ar, eng); err != nil {
 				if errors.Is(err, data.ErrWordExists) {
-					http.Error(w, fmt.Sprintf(`{"err": "%s already in the database"}`, ar), http.StatusBadRequest)
+					http.Error(w, fmt.Sprintf(`{"err": "%s is already in the database"}`, ar), http.StatusBadRequest)
 					return
 				}
 				http.Error(w, `{"err": "unknown error"}`, http.StatusBadRequest)
