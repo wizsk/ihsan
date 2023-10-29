@@ -75,3 +75,13 @@ func (db *JDB) Edit(id int, arabic, english string) error {
 	return db.data.editAndSaveFile(db.path, id, arabic, english)
 }
 
+// copies the data and Returns it
+func (db *JDB) GetVocabs() Vocabs {
+	db.mutex.RLock()
+	defer db.mutex.RUnlock()
+
+	vo := Vocabs{NextID: db.data.NextID}
+	vo.Words = append(vo.Words, db.data.Words...)
+
+	return vo
+}
