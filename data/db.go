@@ -14,7 +14,7 @@ import (
 // json Databse
 type JDB struct {
 	path  string // path to json
-	data  *vocabs
+	data  *Vocabs
 	mutex *sync.RWMutex
 }
 
@@ -24,7 +24,7 @@ func OpenJDB(path string) (*JDB, error) {
 	}
 
 	if _, err := os.Stat(path); err != nil && os.IsNotExist(err) {
-		vo := &vocabs{}
+		vo := &Vocabs{}
 		if err := vo.saveToFile(os.WriteFile, path); err != nil {
 			return nil, err
 		}

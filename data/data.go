@@ -25,12 +25,12 @@ var dataMutex sync.RWMutex
 type writer func(name string, data []byte, perm os.FileMode) error
 type reader func(name string) ([]byte, error)
 
-type vocabs struct {
-	Words  []vocab `json:"words"`
+type Vocabs struct {
+	Words  []Vocab `json:"words"`
 	NextID int     `json:"next_id"`
 }
 
-type vocab struct {
+type Vocab struct {
 	Id         int       `json:"id"`
 	Arabic     string    `json:"arabic"`
 	English    string    `json:"english"`
@@ -41,7 +41,7 @@ type vocab struct {
 // getNextId keeps track of the id.
 //
 // it's not threadsafe. I should be called in a threadsafe func.
-func (vo *vocabs) getNextID() int {
+func (vo *Vocabs) getNextID() int {
 	ni := vo.NextID
 	vo.NextID++
 	return ni
@@ -50,7 +50,7 @@ func (vo *vocabs) getNextID() int {
 // find finds the arabic word if rmharakats == true then the harakats are removed
 //
 // it's not threadsafe. I should be called in a threadsafe func.
-func (vo *vocabs) find(n string, rmHarakats bool) bool {
+func (vo *Vocabs) find(n string, rmHarakats bool) bool {
 	if rmHarakats {
 		n = removeHarakats(n)
 	}
@@ -67,10 +67,10 @@ func (vo *vocabs) find(n string, rmHarakats bool) bool {
 	return false
 }
 
-// add adds the vocab to the struct or returns an error.
+// add adds the Vocab to the struct or returns an error.
 //
 // it's not threadsafe. I should be called in a threadsafe func.
-func (vo *vocabs) add(ar, eng string) error {
+func (vo *Vocabs) add(ar, eng string) error {
 	if ar == "" {
 		return ErrAaFieldisEmpty
 	} else if eng == "" {
@@ -81,14 +81,14 @@ func (vo *vocabs) add(ar, eng string) error {
 		return ErrWordExists
 	}
 
-	vo.Words = append(vo.Words, vocab{Id: vo.getNextID(), Arabic: ar, English: eng, Created: time.Now(), LastEdited: time.Now()})
+	vo.Words = append(vo.Words, Vocab{Id: vo.getNextID(), Arabic: ar, English: eng, Created: time.Now(), LastEdited: time.Now()})
 	return nil
 }
 
 // remove removes finds and removes the specefied id or returns an error.
 //
 // it's not threadsafe. I should be called in a threadsafe func.
-func (vo *vocabs) remove(id int) error {
+func (vo *Vocabs) remove(id int) error {
 	for i, v := range vo.Words {
 		if v.Id == id {
 			// remove it here
@@ -103,10 +103,10 @@ func (vo *vocabs) remove(id int) error {
 	return ErrIdDontExists
 }
 
-// edits the vocab with the given id
+// edits the Vocab with the given id
 //
 // it's not threadsafe. I should be called in a threadsafe func.
-func (vo *vocabs) edit(id int, ar, eng string, lastEdited time.Time) error {
+func (vo *Vocabs) edit(id int, ar, eng string, lastEdited time.Time) error {
 	if ar == "" {
 		return ErrAaFieldisEmpty
 	} else if eng == "" {
@@ -126,7 +126,7 @@ func (vo *vocabs) edit(id int, ar, eng string, lastEdited time.Time) error {
 }
 
 // saveToFile appends the ar, eng to the db and saves it to the database
-func (vo *vocabs) addAndSaveFile(path, ar, eng string) error {
+func (vo *Vocabs) addAndSaveFile(path, ar, eng string) error {
 	if err := vo.add(ar, eng); err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func (vo *vocabs) addAndSaveFile(path, ar, eng string) error {
 }
 
 // removeAndSaveFile appends the ar, eng to the db and saves it to the database
-func (vo *vocabs) removeAndSaveFile(path string, id int) error {
+func (vo *Vocabs) removeAndSaveFile(path string, id int) error {
 	if err := vo.remove(id); err != nil {
 		return err
 	}
@@ -144,7 +144,7 @@ func (vo *vocabs) removeAndSaveFile(path string, id int) error {
 }
 
 // editAndSaveFile appends the ar, eng to the db and saves it to the database
-func (vo *vocabs) editAndSaveFile(path string, id int, ar, eng string) error {
+func (vo *Vocabs) editAndSaveFile(path string, id int, ar, eng string) error {
 	if err := vo.edit(id, ar, eng, time.Now()); err != nil {
 		return err
 	}
@@ -152,7 +152,7 @@ func (vo *vocabs) editAndSaveFile(path string, id int, ar, eng string) error {
 	return vo.saveToFile(os.WriteFile, path)
 }
 
-func (vo *vocabs) saveToFile(write writer, path string) error {
+func (vo *Vocabs) saveToFile(write writer, path string) error {
 	dataMutex.Lock()
 	defer dataMutex.Unlock()
 
@@ -164,11 +164,11 @@ func (vo *vocabs) saveToFile(write writer, path string) error {
 	return write(path, data, readWritePermission)
 }
 
-func ReadFromFile(path string) (*vocabs, error) {
+func ReadFromFile(path string) (*Vocabs, error) {
 	return readFromFile(os.ReadFile, path)
 }
 
-func readFromFile(read reader, path string) (*vocabs, error) {
+func readFromFile(read reader, path string) (*Vocabs, error) {
 	dataMutex.RLock()
 	defer dataMutex.RUnlock()
 
@@ -177,7 +177,7 @@ func readFromFile(read reader, path string) (*vocabs, error) {
 		return nil, err
 	}
 
-	var vo vocabs
+	var vo Vocabs
 	if err = json.Unmarshal(data, &vo); err != nil {
 		return nil, err
 	}

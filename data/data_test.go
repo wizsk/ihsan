@@ -8,7 +8,7 @@ import (
 )
 
 func TestVocabAdd(t *testing.T) {
-	vo := vocabs{}
+	vo := Vocabs{}
 	for _, v := range []struct{ ara, eng string }{{"مَرْحَبًا", "Hello"}, {"شُكْرًا", "Thank you"}, {"مَاء", "Water"}, {"سَمَاء", "Sky"}, {"كِتَاب", "Book"}} {
 		if err := vo.add(v.ara, v.eng); err != nil {
 			t.Errorf("expted '%v' to be nil", err)
@@ -25,7 +25,7 @@ func TestVocabAdd(t *testing.T) {
 	}
 }
 func TestVocabFind(t *testing.T) {
-	vo := vocabs{}
+	vo := Vocabs{}
 	for _, v := range []struct{ ara, eng string }{{"مَرْحَبًا", "Hello"}, {"شُكْرًا", "Thank you"}, {"مَاء", "Water"}, {"سَمَاء", "Sky"}, {"كِتَاب", "Book"}} {
 		if err := vo.add(v.ara, v.eng); err != nil {
 			panic(err) // this should not happendd
@@ -33,7 +33,7 @@ func TestVocabFind(t *testing.T) {
 	}
 	for _, x := range []string{"مرحبًا", "شكرًا", "ماء", "سماء", "كتاب"} {
 		if !vo.find(x, true) {
-			t.Errorf("expected '%v' to be in the vocabs", x)
+			t.Errorf("expected '%v' to be in the Vocabs", x)
 			t.FailNow()
 
 		}
@@ -41,7 +41,7 @@ func TestVocabFind(t *testing.T) {
 
 	for _, x := range []string{"محبًا", "شكا", "اء", "مء", "كتب", "foooo", "bar", "হি হি হি"} {
 		if vo.find(x, true) {
-			t.Errorf("expected '%v' not to be in the vocabs", x)
+			t.Errorf("expected '%v' not to be in the Vocabs", x)
 			t.FailNow()
 
 		}
@@ -49,8 +49,8 @@ func TestVocabFind(t *testing.T) {
 }
 
 func TestVocabRemove(t *testing.T) {
-	pre := vocabs{
-		Words: []vocab{
+	pre := Vocabs{
+		Words: []Vocab{
 			{Id: 1, Arabic: "مَرْحَبًا", English: "Hello"},
 			{Id: 2, Arabic: "شُكْرًا", English: "Thank you"},
 			{Id: 3, Arabic: "مَاء", English: "Water"},
@@ -72,8 +72,8 @@ func TestVocabRemove(t *testing.T) {
 		t.Errorf("expected '%v' to be nil", err)
 	}
 
-	post := vocabs{
-		Words: []vocab{
+	post := Vocabs{
+		Words: []Vocab{
 			{Id: 3, Arabic: "مَاء", English: "Water"},
 			{Id: 4, Arabic: "سَمَاء", English: "Sky"},
 		},
@@ -93,7 +93,7 @@ func TestVocabRemove(t *testing.T) {
 }
 
 func TestVocabEdit(t *testing.T) {
-	vo := vocabs{}
+	vo := Vocabs{}
 	for _, v := range []struct{ ara, eng string }{{"مَرْحَبًا", "Hello"}, {"شُكْرًا", "Thank you"}, {"مدرسة", "School"}, {"مَاء", "Water"}, {"سَمَاء", "Sky"}, {"كِتَاب", "Book"}} {
 		if err := vo.add(v.ara, v.eng); err != nil {
 			panic(err) // this should not happendd
@@ -101,7 +101,7 @@ func TestVocabEdit(t *testing.T) {
 	}
 
 	// copying it
-	res := vocabs{NextID: vo.NextID}
+	res := Vocabs{NextID: vo.NextID}
 	res.Words = append(res.Words, vo.Words...)
 
 	for i, v := range []struct{ ara, eng string }{{"قلم", "Pen"}, {"شجرة", "Tree"}, {"كرة", "Ball"}, {"سماء", "Sky"}, {"جمل", "Camel"}} {
@@ -126,8 +126,8 @@ func TestVocabEdit(t *testing.T) {
 }
 
 /*
-	 vocabs{
-		Words: []vocab{
+	 Vocabs{
+		Words: []Vocab{
 			{1, "مَرْحَبًا", "Hello"},
 			{2, "شُكْرًا", "Thank you"},
 			{3, "مَاء", "Water"},
