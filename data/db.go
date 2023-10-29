@@ -31,6 +31,7 @@ func OpenJDB(path string) (*JDB, error) {
 
 		return &JDB{
 			path:  path,
+			data:  vo,
 			mutex: new(sync.RWMutex),
 		}, nil
 
@@ -67,10 +68,10 @@ func (db *JDB) Remove(id int) error {
 	return db.data.removeAndSaveFile(db.path, id)
 }
 
-
 func (db *JDB) Edit(id int, arabic, english string) error {
 	db.mutex.Lock()
 	defer db.mutex.Unlock()
 
 	return db.data.editAndSaveFile(db.path, id, arabic, english)
 }
+
