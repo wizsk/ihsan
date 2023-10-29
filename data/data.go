@@ -5,10 +5,18 @@ import (
 	"errors"
 	"os"
 	"sync"
+	"time"
+)
+
+const (
+	readWritePermission = 0666
 )
 
 var (
-	ErrWordExists = errors.New("word is already in the database")
+	ErrWordExists      = errors.New("word is already in the database")
+	ErrIdDontExists    = errors.New("id don't exists")
+	ErrAaFieldisEmpty  = errors.New("arabic field is empty")
+	ErrEngFieldisEmpty = errors.New("english field is empty")
 )
 
 // to be thead safe no race conditions
@@ -19,21 +27,30 @@ type reader func(name string) ([]byte, error)
 
 type vocabs struct {
 	Words  []vocab `json:"words"`
-	NextID uint64  `json:"next_id"`
+	NextID int     `json:"next_id"`
 }
 
 type vocab struct {
-	Id      uint64 `json:"id"`
-	Arabic  string `json:"arabic"`
-	English string `json:"english"`
+	Id         int       `json:"id"`
+	Arabic     string    `json:"arabic"`
+	English    string    `json:"english"`
+	Created    time.Time `json:"created"`
+	LastEdited time.Time `json:"last_edited"`
 }
 
-func (v *vocabs) find(n string) bool {
-	return v.findEx(n, true)
+// getNextId keeps track of the id.
+//
+// it's not threadsafe. I should be called in a threadsafe func.
+func (vo *vocabs) getNextID() int {
+	ni := vo.NextID
+	vo.NextID++
+	return ni
 }
 
-// c = remove harakats
-func (vo *vocabs) findEx(n string, rmHarakats bool) bool {
+// find finds the arabic word if rmharakats == true then the harakats are removed
+//
+// it's not threadsafe. I should be called in a threadsafe func.
+func (vo *vocabs) find(n string, rmHarakats bool) bool {
 	if rmHarakats {
 		n = removeHarakats(n)
 	}
@@ -50,29 +67,70 @@ func (vo *vocabs) findEx(n string, rmHarakats bool) bool {
 	return false
 }
 
-func (vo *vocabs) getNextID() uint64 {
-	ni := vo.NextID
-	vo.NextID++
-	return ni
-}
-
-// idk if it needs thead safety... or not
-// .. but there is none for now
+// add adds the vocab to the struct or returns an error.
+//
+// it's not threadsafe. I should be called in a threadsafe func.
 func (vo *vocabs) add(ar, eng string) error {
-	// to be thread safe
-	// i don't think This func needs to be theard safe..
-	// dataMutex.Lock()
-	// defer dataMutex.Unlock()
+	if ar == "" {
+		return ErrAaFieldisEmpty
+	} else if eng == "" {
+		return ErrEngFieldisEmpty
+	}
 
-	if vo.find(ar) {
+	if vo.find(ar, true) {
 		return ErrWordExists
 	}
 
-	vo.Words = append(vo.Words, vocab{Id: vo.getNextID(), Arabic: ar, English: eng})
+	vo.Words = append(vo.Words, vocab{Id: vo.getNextID(), Arabic: ar, English: eng, Created: time.Now(), LastEdited: time.Now()})
 	return nil
 }
 
-func (vo *vocabs) SaveToFile(path string) error {
+// remove removes finds and removes the specefied id or returns an error.
+//
+// it's not threadsafe. I should be called in a threadsafe func.
+func (vo *vocabs) remove(id int) error {
+	for i, v := range vo.Words {
+		if v.Id == id {
+			// remove it here
+			for i := i; i < len(vo.Words)-1; i++ {
+				vo.Words[i] = vo.Words[i+1]
+			}
+			vo.Words = vo.Words[:len(vo.Words)-1]
+			return nil
+		}
+	}
+
+	return ErrIdDontExists
+}
+
+// edits the vocab with the given id
+//
+// it's not threadsafe. I should be called in a threadsafe func.
+func (vo *vocabs) edit(id int, ar, eng string, lastEdited time.Time) error {
+	if ar == "" {
+		return ErrAaFieldisEmpty
+	} else if eng == "" {
+		return ErrEngFieldisEmpty
+	}
+
+	for i := 0; i < len(vo.Words); i++ {
+		if vo.Words[i].Id == id {
+			vo.Words[i].Arabic = ar
+			vo.Words[i].English = eng
+			vo.Words[i].LastEdited = lastEdited
+			return nil
+		}
+	}
+
+	return ErrIdDontExists
+}
+
+// saveToFile appends the ar, eng to the db and saves it to the database
+func (vo *vocabs) addAndSaveFile(path, ar, eng string) error {
+	if err := vo.add(ar, eng); err != nil {
+		return err
+	}
+
 	return vo.saveToFile(os.WriteFile, path)
 }
 
@@ -85,7 +143,7 @@ func (vo *vocabs) saveToFile(write writer, path string) error {
 		return err
 	}
 
-	return write(path, data, 0677)
+	return write(path, data, readWritePermission)
 }
 
 func ReadFromFile(path string) (*vocabs, error) {

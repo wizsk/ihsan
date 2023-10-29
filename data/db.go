@@ -5,17 +5,16 @@ import (
 	"sync"
 )
 
-const readWritePermission = 0666
-
-// Open
-// Add
-// Delete
-// Update
-// these functins are needed
+// - [x] Open
+// - [x] Add
+// - [ ] Delete
+// - [ ] Update
+// - [ ] these functins are needed
 
 // json Databse
 type JDB struct {
 	path  string // path to json
+	data  *vocabs
 	mutex *sync.RWMutex
 }
 
@@ -36,13 +35,14 @@ func OpenJDB(path string) (*JDB, error) {
 	}
 
 	// read it
-	_, err := readFromFile(os.ReadFile, path)
+	v, err := readFromFile(os.ReadFile, path)
 	if err != nil {
 		return nil, err
 	}
 
 	db := &JDB{
 		path:  path,
+		data:  v,
 		mutex: new(sync.RWMutex),
 	}
 	return db, nil
@@ -51,5 +51,10 @@ func OpenJDB(path string) (*JDB, error) {
 func (db *JDB) Add(ar, eng string) error {
 	db.mutex.Lock()
 	defer db.mutex.Unlock()
-	readFromFile(db.path)
+
+	return db.data.addAndSaveFile(db.path, ar, eng)
+}
+
+func (db *JDB) Delete(id int) error {
+	return nil
 }
