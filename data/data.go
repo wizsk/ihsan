@@ -134,11 +134,29 @@ func (vo *vocabs) addAndSaveFile(path, ar, eng string) error {
 	return vo.saveToFile(os.WriteFile, path)
 }
 
+// removeAndSaveFile appends the ar, eng to the db and saves it to the database
+func (vo *vocabs) removeAndSaveFile(path string, id int) error {
+	if err := vo.remove(id); err != nil {
+		return err
+	}
+
+	return vo.saveToFile(os.WriteFile, path)
+}
+
+// editAndSaveFile appends the ar, eng to the db and saves it to the database
+func (vo *vocabs) editAndSaveFile(path string, id int, ar, eng string) error {
+	if err := vo.edit(id, ar, eng, time.Now()); err != nil {
+		return err
+	}
+
+	return vo.saveToFile(os.WriteFile, path)
+}
+
 func (vo *vocabs) saveToFile(write writer, path string) error {
 	dataMutex.Lock()
 	defer dataMutex.Unlock()
 
-	data, err := json.Marshal(vo)
+	data, err := json.MarshalIndent(vo, "", "\t")
 	if err != nil {
 		return err
 	}

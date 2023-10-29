@@ -1,15 +1,15 @@
 package data
 
 import (
+	"fmt"
 	"os"
 	"sync"
 )
 
 // - [x] Open
 // - [x] Add
-// - [ ] Delete
-// - [ ] Update
-// - [ ] these functins are needed
+// - [x] Remove
+// - [x] Edit
 
 // json Databse
 type JDB struct {
@@ -19,8 +19,13 @@ type JDB struct {
 }
 
 func OpenJDB(path string) (*JDB, error) {
+	if path == "" {
+		return nil, fmt.Errorf("path can not be empty")
+	}
+
 	if _, err := os.Stat(path); err != nil && os.IsNotExist(err) {
-		if _, err := os.Create(path); err != nil {
+		vo := &vocabs{}
+		if err := vo.saveToFile(os.WriteFile, path); err != nil {
 			return nil, err
 		}
 
@@ -55,6 +60,17 @@ func (db *JDB) Add(ar, eng string) error {
 	return db.data.addAndSaveFile(db.path, ar, eng)
 }
 
-func (db *JDB) Delete(id int) error {
-	return nil
+func (db *JDB) Remove(id int) error {
+	db.mutex.Lock()
+	defer db.mutex.Unlock()
+
+	return db.data.removeAndSaveFile(db.path, id)
+}
+
+
+func (db *JDB) Edit(id int, arabic, english string) error {
+	db.mutex.Lock()
+	defer db.mutex.Unlock()
+
+	return db.data.editAndSaveFile(db.path, id, arabic, english)
 }
