@@ -119,6 +119,10 @@ func TestVocabEdit(t *testing.T) {
 		t.Errorf("expedted to be equeal:\n%+v\n%+v", vo, res)
 		t.FailNow()
 	}
+	if err := vo.edit(1000, "brrr", "fo", time.Now()); !errors.Is(err, ErrIdDontExists) {
+		t.Error(err)
+		t.FailNow()
+	}
 }
 
 /*
