@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -71,6 +72,9 @@ func (vo *Vocabs) find(n string, rmHarakats bool) bool {
 //
 // it's not threadsafe. I should be called in a threadsafe func.
 func (vo *Vocabs) add(ar, eng string) error {
+	ar = strings.TrimSpace(ar)
+	eng = strings.TrimSpace(eng)
+
 	if ar == "" {
 		return ErrAaFieldisEmpty
 	} else if eng == "" {

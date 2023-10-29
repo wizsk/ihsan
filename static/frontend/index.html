@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ihsan</title>
+</head>
+
+<body>
+    <div>
+        <!-- 
+type Vocab struct {
+	Id         int       `json:"id"`
+	Arabic     string    `json:"arabic"`
+	English    string    `json:"english"`
+	Created    time.Time `json:"created"`
+	LastEdited time.Time `json:"last_edited"`
+}
+        -->
+        {{range .}}
+        <div data-id="{{.Id}}">
+            <span>arabic: {{.Arabic}}</span>
+            <span>english: {{.English}}</span>
+            <!-- <span>created: {{formatTime .Created}}</span>
+            <span>LastEdited: {{formatTime .LastEdited}}</span> -->
+        </div>
+        {{else}}
+        <div>
+            add some new vocabs
+        </div>
+        {{end}}
+
+        <br><br>
+        <form id="vocab-form">
+            <label for="arabic">Arabic:</label>
+            <input type="text" id="arabic" name="arabic" required>
+
+            <label for="english">English:</label>
+            <input type="text" id="english" name="english" required lang="en-US" spellcheck="true">
+
+            <input type="submit" value="Submit">
+            <div id="vocab-form-err-div"></div>
+        </form>
+    </div>
+
+    <script>
+        // put it here
+        // {{ template "index.js"}}
+    </script>
+</body>
+
+</html>
