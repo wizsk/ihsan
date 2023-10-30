@@ -1,9 +1,11 @@
-// yo js :)
+// yo js :), Don't remove this comment.
 const vocabs = document.querySelectorAll("[data-remove]");
 const vocabForm = document.getElementById("vocab-form");
 const ar = document.getElementById("arabic");
 const eng = document.getElementById("english");
+const harakat = document.getElementById("harakats");
 const vocabFormErr = document.getElementById("vocab-form-err-div");
+
 
 vocabs.forEach(e => {
     e.addEventListener("click", () => {
@@ -44,7 +46,12 @@ vocabForm.addEventListener("submit", async e => {
         return
     }
 
-    const url = `/api/add?arabic=${encodeURIComponent(arabic)}&english=${encodeURIComponent(english)}`
+    let respectHarakats = "false"
+    if (harakat.checked) {
+        respectHarakats = "true"
+    }
+
+    const url = `/api/add?arabic=${encodeURIComponent(arabic)}&english=${encodeURIComponent(english)}&respect_harakats=${respectHarakats}`
     const res = await fetch(url, {
         method: "POST",
     })

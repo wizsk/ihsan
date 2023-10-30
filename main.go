@@ -39,9 +39,20 @@ func main() {
 			_ = r.ParseForm()
 			ar := r.FormValue("arabic")
 			eng := r.FormValue("english")
+			harakat := r.FormValue("respect_harakats")
 
-			fmt.Println("/api/add", r.RemoteAddr)
-			if err := db.Add(ar, eng); err != nil {
+			var harakats bool
+			if harakat == "true" {
+				harakats = true
+			} else if harakat == "false" {
+				harakats = false
+			} else {
+				http.Error(w, "invalid form value", http.StatusBadRequest)
+				return
+			}
+
+			fmt.Println("/api/add", r.RemoteAddr, ar, eng, harakat)
+			if err := db.Add(ar, eng, harakats); err != nil {
 				if errors.Is(err, data.ErrWordExists) {
 					http.Error(w, fmt.Sprintf(`{"err": "%s is already in the database"}`, ar), http.StatusBadRequest)
 					return

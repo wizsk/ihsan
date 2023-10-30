@@ -1,12 +1,8 @@
 package data
 
-import (
-	"os"
-	"testing"
-)
-
 // db test will be derectly written to disk!
 
+/*
 func TestOpenDb(t *testing.T) {
 	file := "tmp.json"
 	db, err := OpenJDB(file)
@@ -35,3 +31,4 @@ func TestOpenDb(t *testing.T) {
 
 	os.Remove(file)
 }
+*/

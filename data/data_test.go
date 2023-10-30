@@ -7,17 +7,19 @@ import (
 	"time"
 )
 
+// if add working correnctly then find sould also work tho
 func TestVocabAdd(t *testing.T) {
 	vo := Vocabs{}
 	for _, v := range []struct{ ara, eng string }{{"مَرْحَبًا", "Hello"}, {"شُكْرًا", "Thank you"}, {"مَاء", "Water"}, {"سَمَاء", "Sky"}, {"كِتَاب", "Book"}} {
-		if err := vo.add(v.ara, v.eng); err != nil {
+		// respect harakts
+		if err := vo.add(v.ara, v.eng, false); err != nil {
 			t.Errorf("expted '%v' to be nil", err)
 			t.FailNow()
 		}
 	}
 
 	for _, x := range []struct{ ara, eng string }{{"مرحبًا", "Hello"}, {"شكرًا", "Thank you"}, {"ماء", "Water"}, {"سماء", "Sky"}, {"كتاب", "Book"}} {
-		err := vo.add(x.ara, x.eng)
+		err := vo.add(x.ara, x.eng, false)
 		if !errors.Is(err, ErrWordExists) {
 			t.Errorf("expected '%v' to be %v", err, ErrWordExists)
 			t.FailNow()
@@ -27,13 +29,23 @@ func TestVocabAdd(t *testing.T) {
 func TestVocabFind(t *testing.T) {
 	vo := Vocabs{}
 	for _, v := range []struct{ ara, eng string }{{"مَرْحَبًا", "Hello"}, {"شُكْرًا", "Thank you"}, {"مَاء", "Water"}, {"سَمَاء", "Sky"}, {"كِتَاب", "Book"}} {
-		if err := vo.add(v.ara, v.eng); err != nil {
+		if err := vo.add(v.ara, v.eng, false); err != nil {
 			panic(err) // this should not happendd
 		}
 	}
 	for _, x := range []string{"مرحبًا", "شكرًا", "ماء", "سماء", "كتاب"} {
-		if !vo.find(x, true) {
-			t.Errorf("expected '%v' to be in the Vocabs", x)
+		if vo.find(x, true) {
+			t.Errorf("expected '%v' not to be in the Vocabs", x)
+			t.FailNow()
+
+		}
+	}
+
+	// find should return false when it respects the harakats
+	// case the harakats are chaged there....
+	for _, x := range []struct{ ara, eng string }{{"مِرْحَبًا", "Hello"}, {"شِكْرًا", "Thank you"}, {"مَاءٌ", "Water"}, {"سَمَاءِ", "Sky"}, {"كِتَابَ", "Book"}} {
+		if vo.find(x.ara, true) {
+			t.Errorf("expected '%v' not to be in the Vocabs", x)
 			t.FailNow()
 
 		}
@@ -95,7 +107,7 @@ func TestVocabRemove(t *testing.T) {
 func TestVocabEdit(t *testing.T) {
 	vo := Vocabs{}
 	for _, v := range []struct{ ara, eng string }{{"مَرْحَبًا", "Hello"}, {"شُكْرًا", "Thank you"}, {"مدرسة", "School"}, {"مَاء", "Water"}, {"سَمَاء", "Sky"}, {"كِتَاب", "Book"}} {
-		if err := vo.add(v.ara, v.eng); err != nil {
+		if err := vo.add(v.ara, v.eng, false); err != nil {
 			panic(err) // this should not happendd
 		}
 	}

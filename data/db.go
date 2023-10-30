@@ -54,11 +54,11 @@ func OpenJDB(path string) (*JDB, error) {
 	return db, nil
 }
 
-func (db *JDB) Add(ar, eng string) error {
+func (db *JDB) Add(ar, eng string, respectHarakts bool) error {
 	db.mutex.Lock()
 	defer db.mutex.Unlock()
 
-	return db.data.addAndSaveFile(db.path, ar, eng)
+	return db.data.addAndSaveFile(db.path, ar, eng, respectHarakts)
 }
 
 func (db *JDB) Remove(id int) error {

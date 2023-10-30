@@ -51,14 +51,14 @@ func (vo *Vocabs) getNextID() int {
 // find finds the arabic word if rmharakats == true then the harakats are removed
 //
 // it's not threadsafe. I should be called in a threadsafe func.
-func (vo *Vocabs) find(n string, rmHarakats bool) bool {
-	if rmHarakats {
+func (vo *Vocabs) find(n string, respectHarakts bool) bool {
+	if !respectHarakts {
 		n = removeHarakats(n)
 	}
 
 	for _, v := range vo.Words {
 		hey := v.Arabic
-		if rmHarakats {
+		if !respectHarakts {
 			hey = removeHarakats(v.Arabic)
 		}
 		if hey == n {
@@ -71,7 +71,7 @@ func (vo *Vocabs) find(n string, rmHarakats bool) bool {
 // add adds the Vocab to the struct or returns an error.
 //
 // it's not threadsafe. I should be called in a threadsafe func.
-func (vo *Vocabs) add(ar, eng string) error {
+func (vo *Vocabs) add(ar, eng string, respectHarakts bool) error {
 	ar = strings.TrimSpace(ar)
 	eng = strings.TrimSpace(eng)
 
@@ -81,7 +81,7 @@ func (vo *Vocabs) add(ar, eng string) error {
 		return ErrEngFieldisEmpty
 	}
 
-	if vo.find(ar, true) {
+	if vo.find(ar, respectHarakts) {
 		return ErrWordExists
 	}
 
@@ -130,8 +130,8 @@ func (vo *Vocabs) edit(id int, ar, eng string, lastEdited time.Time) error {
 }
 
 // saveToFile appends the ar, eng to the db and saves it to the database
-func (vo *Vocabs) addAndSaveFile(path, ar, eng string) error {
-	if err := vo.add(ar, eng); err != nil {
+func (vo *Vocabs) addAndSaveFile(path, ar, eng string, respoectHarakats bool) error {
+	if err := vo.add(ar, eng, respoectHarakats); err != nil {
 		return err
 	}
 

@@ -41,14 +41,16 @@ type Vocab struct {
             <label for="english">English:</label>
             <input type="text" id="english" name="english" required lang="en-US" spellcheck="true">
 
+            <input type="checkbox" id="harakats" name="harakats" value="true">
+            <label for="harakats">Respect Harakats</label>
+
             <input type="submit" value="Submit">
             <div id="vocab-form-err-div"></div>
         </form>
     </div>
 
     <script>
-        // put it here
-        // {{ template "index.js"}}
+        // {{ template "index.js" }}
     </script>
 </body>
 
