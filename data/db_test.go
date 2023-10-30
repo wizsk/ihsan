@@ -1,8 +1,12 @@
 package data
 
+import (
+	"os"
+	"testing"
+)
+
 // db test will be derectly written to disk!
 
-/*
 func TestOpenDb(t *testing.T) {
 	file := "tmp.json"
 	db, err := OpenJDB(file)
@@ -11,7 +15,8 @@ func TestOpenDb(t *testing.T) {
 		t.FailNow()
 	}
 
-	if err := db.Add("نسبsd`f", "idk"); err != nil {
+	// don't respect harakats
+	if err := db.Add("نسبsd`f", "idk", false); err != nil {
 		t.Error(err)
 		t.FailNow()
 
@@ -31,4 +36,3 @@ func TestOpenDb(t *testing.T) {
 
 	os.Remove(file)
 }
-*/
