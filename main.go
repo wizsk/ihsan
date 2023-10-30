@@ -84,7 +84,28 @@ func main() {
 		}
 		http.Redirect(w, r, "/", http.StatusMovedPermanently)
 	})
-	// http.HandleFunc("/api/edit", nil)
+
+	http.HandleFunc("/api/edit", func(w http.ResponseWriter, r *http.Request) {
+		// fields
+		// id, arabic, english
+		// look for duplicates // perhaps
+
+		_ = r.ParseForm()
+
+		id, err := strconv.Atoi(r.FormValue("id"))
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		arabic := r.FormValue("arabic")
+		englsih := r.FormValue("english")
+
+		fmt.Println("/api/add", r.RemoteAddr, id, arabic, englsih)
+		if err := db.Edit(id, arabic, englsih); err != nil {
+			log.Println(err)
+			return
+		}
+	})
 
 	if err := http.ListenAndServe(port, nil); err != nil {
 		log.Fatal(err)

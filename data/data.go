@@ -111,6 +111,9 @@ func (vo *Vocabs) remove(id int) error {
 //
 // it's not threadsafe. I should be called in a threadsafe func.
 func (vo *Vocabs) edit(id int, ar, eng string, lastEdited time.Time) error {
+	ar = strings.TrimSpace(ar)
+	eng = strings.TrimSpace(eng)
+
 	if ar == "" {
 		return ErrAaFieldisEmpty
 	} else if eng == "" {
