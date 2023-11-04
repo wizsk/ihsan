@@ -5,6 +5,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ihsan</title>
+
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 70%;
+            margin: 0 auto;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+        /* Keyframes for the blinking animation */
+        @keyframes blink {
+            0% {
+                /* opacity: 1; */
+                background-color: red;
+            }
+
+            50% {
+                /* opacity: 0; */
+                background-color: transparent;
+            }
+
+            100% {
+                /* opacity: 1; */
+                background-color: red;
+            }
+        }
+
+        [id]:target {
+            /* color: red; */
+            animation: blink 2s;
+        }
+    </style>
 </head>
 
 <body>
@@ -18,20 +61,42 @@ type Vocab struct {
 	LastEdited time.Time `json:"last_edited"`
 }
         -->
+        <table style="border: 1px;">
+            <tr>
+                <th>Arabic</th>
+                <th>English</th>
+                <th>remove the vocab</th>
+            </tr>
+            {{range .}}
+            <tr id="{{.Id}}">
+                <td>{{.Arabic}}</td>
+                <td>{{.English}}</td>
+                <td data-remove="{{.Id}}">[click to remove]</td>
+                <!-- <span data-edit="{{.Id}}">[click to edit]</span> -->
+                <!-- <span>created: {{formatTime .Created}}</span>
+            <span>LastEdited: {{formatTime .LastEdited}}</span> -->
+            </tr>
+            {{else}}
+            <div>
+                add some new vocabs
+            </div>
+            {{end}}
+        </table>
+
+        <!-- <br><br><br><br>
         {{range .}}
         <div id="{{.Id}}">
-            <span>arabic: {{.Arabic}}</span>
-            <span>english: {{.English}}</span>
+            <span>{{.Arabic}}</span>
+            <span> | </span>
+            <span>{{.English}}</span>
             <span data-remove="{{.Id}}">[click to remove]</span>
-            <!-- <span data-edit="{{.Id}}">[click to edit]</span> -->
-            <!-- <span>created: {{formatTime .Created}}</span>
-            <span>LastEdited: {{formatTime .LastEdited}}</span> -->
+            <span>LastEdited: {{formatTime .LastEdited}}</span> 
         </div>
         {{else}}
         <div>
             add some new vocabs
         </div>
-        {{end}}
+        {{end}} -->
 
         <br><br>
         <form id="vocab-form">
