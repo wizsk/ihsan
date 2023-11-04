@@ -66,15 +66,16 @@ type Vocab struct {
                 <th>Arabic</th>
                 <th>English</th>
                 <th>remove the vocab</th>
+                <th>edit the vocab</th>
             </tr>
             {{range .}}
             <tr id="{{.Id}}">
-                <td>{{.Arabic}}</td>
-                <td>{{.English}}</td>
+                <td class="arabic">{{.Arabic}}</td>
+                <td class="english">{{.English}}</td>
                 <td data-remove="{{.Id}}">[click to remove]</td>
+                <td data-edit="{{.Id}}">[click to edit]</td>
                 <!-- <span data-edit="{{.Id}}">[click to edit]</span> -->
-                <!-- <span>created: {{formatTime .Created}}</span>
-            <span>LastEdited: {{formatTime .LastEdited}}</span> -->
+                <!-- <span>created: {{formatTime .Created}}</span><span>LastEdited: {{formatTime .LastEdited}}</span> -->
             </tr>
             {{else}}
             <div>
