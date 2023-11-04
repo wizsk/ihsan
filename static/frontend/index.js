@@ -58,7 +58,12 @@ vocabForm.addEventListener("submit", async e => {
 
     if (!res.ok) {
         let msg = await res.json();
-        vocabFormErr.innerHTML = `<span style="color:red">err: ${msg.err}</span>`;
+        let id = "";
+        if (msg.data) {
+            console.log(msg.data)
+            id = `<br/> <a href="#${msg.data.id}">GoTo ${msg.data.arabic}</a>`
+        }
+        vocabFormErr.innerHTML = `<span style="color:red">err: ${msg.err}</span>${id}`;
     } else {
         if (res.redirected) {
             window.location.href = "/";

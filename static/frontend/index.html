@@ -19,7 +19,7 @@ type Vocab struct {
 }
         -->
         {{range .}}
-        <div>
+        <div id="{{.Id}}">
             <span>arabic: {{.Arabic}}</span>
             <span>english: {{.English}}</span>
             <span data-remove="{{.Id}}">[click to remove]</span>

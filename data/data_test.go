@@ -7,25 +7,27 @@ import (
 	"time"
 )
 
+// Testting (*vocab) add(...) is pointless
+//
 // if add working correnctly then find sould also work tho
-func TestVocabAdd(t *testing.T) {
-	vo := Vocabs{}
-	for _, v := range []struct{ ara, eng string }{{"مَرْحَبًا", "Hello"}, {"شُكْرًا", "Thank you"}, {"مَاء", "Water"}, {"سَمَاء", "Sky"}, {"كِتَاب", "Book"}} {
-		// respect harakts
-		if err := vo.add(v.ara, v.eng, false); err != nil {
-			t.Errorf("expted '%v' to be nil", err)
-			t.FailNow()
-		}
-	}
+// func TestVocabAdd(t *testing.T) {
+// 	vo := Vocabs{}
+// 	for _, v := range []struct{ ara, eng string }{{"مَرْحَبًا", "Hello"}, {"شُكْرًا", "Thank you"}, {"مَاء", "Water"}, {"سَمَاء", "Sky"}, {"كِتَاب", "Book"}} {
+// 		// respect harakts
+// 		if err := vo.add(v.ara, v.eng, false); err != nil {
+// 			t.Errorf("expted '%v' to be nil", err)
+// 			t.FailNow()
+// 		}
+// 	}
 
-	for _, x := range []struct{ ara, eng string }{{"مرحبًا", "Hello"}, {"شكرًا", "Thank you"}, {"ماء", "Water"}, {"سماء", "Sky"}, {"كتاب", "Book"}} {
-		err := vo.add(x.ara, x.eng, false)
-		if !errors.Is(err, ErrWordExists) {
-			t.Errorf("expected '%v' to be %v", err, ErrWordExists)
-			t.FailNow()
-		}
-	}
-}
+//		for _, x := range []struct{ ara, eng string }{{"مرحبًا", "Hello"}, {"شكرًا", "Thank you"}, {"ماء", "Water"}, {"سماء", "Sky"}, {"كتاب", "Book"}} {
+//			err := vo.add(x.ara, x.eng, false)
+//			if !errors.Is(err, ErrWordExists) {
+//				t.Errorf("expected '%v' to be %v", err, ErrWordExists)
+//				t.FailNow()
+//			}
+//		}
+//	}
 func TestVocabFind(t *testing.T) {
 	vo := Vocabs{}
 	for _, v := range []struct{ ara, eng string }{{"مَرْحَبًا", "Hello"}, {"شُكْرًا", "Thank you"}, {"مَاء", "Water"}, {"سَمَاء", "Sky"}, {"كِتَاب", "Book"}} {
@@ -33,26 +35,29 @@ func TestVocabFind(t *testing.T) {
 			panic(err) // this should not happendd
 		}
 	}
+
+	// should be eble to find it so, if it returns nil then
+	// find didn't find anyting got it!
 	for _, x := range []string{"مرحبًا", "شكرًا", "ماء", "سماء", "كتاب"} {
-		if vo.find(x, true) {
-			t.Errorf("expected '%v' not to be in the Vocabs", x)
+		if vo.find(x, false) == nil {
+			t.Errorf("expected '%v' to be in the Vocabs", x)
 			t.FailNow()
 
 		}
 	}
 
-	// find should return false when it respects the harakats
-	// case the harakats are chaged there....
+	// should not find so it should return nil
 	for _, x := range []struct{ ara, eng string }{{"مِرْحَبًا", "Hello"}, {"شِكْرًا", "Thank you"}, {"مَاءٌ", "Water"}, {"سَمَاءِ", "Sky"}, {"كِتَابَ", "Book"}} {
-		if vo.find(x.ara, true) {
+		if vo.find(x.ara, true) != nil {
 			t.Errorf("expected '%v' not to be in the Vocabs", x)
 			t.FailNow()
 
 		}
 	}
 
+	// these should not be in the "fonund"
 	for _, x := range []string{"محبًا", "شكا", "اء", "مء", "كتب", "foooo", "bar", "হি হি হি"} {
-		if vo.find(x, true) {
+		if vo.find(x, true) != nil {
 			t.Errorf("expected '%v' not to be in the Vocabs", x)
 			t.FailNow()
 

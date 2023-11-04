@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -53,10 +52,11 @@ func main() {
 
 			fmt.Println("/api/add", r.RemoteAddr, ar, eng, harakat)
 			if err := db.Add(ar, eng, harakats); err != nil {
-				if errors.Is(err, data.ErrWordExists) {
-					http.Error(w, fmt.Sprintf(`{"err": "%s is already in the database"}`, ar), http.StatusBadRequest)
+				if v, ok := err.(*data.Vocab); ok {
+					http.Error(w, fmt.Sprintf(`{"err": "%v is already in the database", "data": {"id": %d, "arabic": "%s", "english": "%s"}}`, v, v.Id, v.Arabic, v.English), http.StatusBadRequest)
 					return
 				}
+
 				http.Error(w, `{"err": "unknown error"}`, http.StatusBadRequest)
 				fmt.Println(err)
 				return

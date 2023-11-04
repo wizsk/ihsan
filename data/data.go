@@ -3,6 +3,7 @@ package data
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 	"sync"
@@ -39,6 +40,10 @@ type Vocab struct {
 	LastEdited time.Time `json:"last_edited"`
 }
 
+func (v *Vocab) Error() string {
+	return fmt.Sprintf("%d - %s - %s is already in the db", v.Id, v.Arabic, v.English)
+}
+
 // getNextId keeps track of the id.
 //
 // it's not threadsafe. I should be called in a threadsafe func.
@@ -51,21 +56,22 @@ func (vo *Vocabs) getNextID() int {
 // find finds the arabic word if rmharakats == true then the harakats are removed
 //
 // it's not threadsafe. I should be called in a threadsafe func.
-func (vo *Vocabs) find(n string, respectHarakts bool) bool {
+func (vo *Vocabs) find(n string, respectHarakts bool) *Vocab {
 	if !respectHarakts {
 		n = removeHarakats(n)
 	}
 
+	fmt.Println("looking for", n)
 	for _, v := range vo.Words {
 		hey := v.Arabic
 		if !respectHarakts {
 			hey = removeHarakats(v.Arabic)
 		}
 		if hey == n {
-			return true
+			return &v
 		}
 	}
-	return false
+	return nil
 }
 
 // add adds the Vocab to the struct or returns an error.
@@ -74,15 +80,14 @@ func (vo *Vocabs) find(n string, respectHarakts bool) bool {
 func (vo *Vocabs) add(ar, eng string, respectHarakts bool) error {
 	ar = strings.TrimSpace(ar)
 	eng = strings.TrimSpace(eng)
+	if v := vo.find(ar, respectHarakts); v != nil {
+		return v
+	}
 
 	if ar == "" {
 		return ErrAaFieldisEmpty
 	} else if eng == "" {
 		return ErrEngFieldisEmpty
-	}
-
-	if vo.find(ar, respectHarakts) {
-		return ErrWordExists
 	}
 
 	vo.Words = append(vo.Words, Vocab{Id: vo.getNextID(), Arabic: ar, English: eng, Created: time.Now(), LastEdited: time.Now()})
