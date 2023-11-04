@@ -95,6 +95,7 @@ func main() {
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err != nil {
 			log.Println(err)
+			http.Error(w, fmt.Sprintf(`{"err": "%v"}`, err), http.StatusBadRequest)
 			return
 		}
 		arabic := r.FormValue("arabic")
@@ -102,7 +103,7 @@ func main() {
 
 		fmt.Println("/api/add", r.RemoteAddr, id, arabic, englsih)
 		if err := db.Edit(id, arabic, englsih); err != nil {
-			log.Println(err)
+			http.Error(w, fmt.Sprintf(`{"err": "%v"}`, err), http.StatusBadRequest)
 			return
 		}
 	})

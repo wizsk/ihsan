@@ -42,13 +42,7 @@ editVocabs.forEach(e => {
             }
         };
 
-        const cleanAndReq = () => {
-            // cleaning up
-            ar.contentEditable = false;
-            eng.contentEditable = false;
-            parent.replaceChild(e, nd);
-            ar.removeEventListener("keydown", keyDown);
-            eng.removeEventListener("keydown", keyDown);
+        const cleanAndReq = async () => {
 
             let arTxt = ar.innerText;
             let engTxt = eng.innerText;
@@ -57,14 +51,52 @@ editVocabs.forEach(e => {
 
             if (arTxt.includes("\n")) {
                 console.error("ar text contins new line");
+                cleanup();
                 return;
             }
             if (engTxt.includes("\n")) {
                 console.error("eng text contins new line");
+                cleanup();
+                return;
+            }
+
+            if (arTxtPre === arTxt && engTxtPre === engTxtPre) {
+                console.log("nothing changed");
+                cleanup();
                 return;
             }
 
             console.log(arTxt, engTxt);
+
+            const url = `/api/edit?id=${id}&arabic=${encodeURIComponent(arTxt)}&english=${encodeURIComponent(engTxt)}`;
+            const res = await fetch(url, {
+                method: "POST",
+            });
+
+            if (!res.ok) {
+                console.error(res.error)
+                cleanup(true)
+                return;
+            } else if (res.redirected) {
+                window.location.href = "/";
+            }
+
+            cleanup();
+
+        };
+
+        // if default is ture then make text to pre.
+        const cleanup = (defaut) => {
+            if (defaut) {
+                ar.innerText = arTxtPre;
+                eng.innerText = engTxtPre;
+            }
+            // cleaning up
+            ar.contentEditable = false;
+            eng.contentEditable = false;
+            parent.replaceChild(e, nd);
+            ar.removeEventListener("keydown", keyDown);
+            eng.removeEventListener("keydown", keyDown);
         };
 
 
@@ -83,20 +115,6 @@ editVocabs.forEach(e => {
         ar.contentEditable = true;
         eng.contentEditable = true;
 
-
-        // fetch(`/api/remove?id=${id}`, {
-        //     method: "POST",
-        // }).then((res) => {
-        //     if (res.redirected) {
-        //         // console.log(res.headers)
-        //         window.location.href = "/"
-        //     }
-        //     console.log(res)
-        // }
-
-        // ).catch(err => {
-        //     console.error(err);
-        // });
     })
 });
 
@@ -138,10 +156,9 @@ vocabForm.addEventListener("submit", async e => {
             id = `<br/> <a href="#${msg.data.id}">GoTo ${msg.data.arabic}</a>`
         }
         vocabFormErr.innerHTML = `<span style="color:red">err: ${msg.err}</span>${id}`;
-    } else {
-        if (res.redirected) {
-            window.location.href = "/";
-        }
+    } else if (res.redirected) {
+        window.location.href = "/";
+
     }
     reqesing = false;
 })

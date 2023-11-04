@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -63,24 +62,29 @@ type Vocab struct {
         -->
         <table style="border: 1px;">
             <tr>
-                <th>Arabic</th>
-                <th>English</th>
                 <th>remove the vocab</th>
                 <th>edit the vocab</th>
+                <th>English</th>
+                <th>Arabic</th>
             </tr>
             {{range .}}
             <tr id="{{.Id}}">
-                <td class="arabic">{{.Arabic}}</td>
-                <td class="english">{{.English}}</td>
                 <td data-remove="{{.Id}}">[click to remove]</td>
                 <td data-edit="{{.Id}}">[click to edit]</td>
+                <td class="english">{{.English}}</td>
+                <td class="arabic" style="text-align: right;">{{.Arabic}}</td>
                 <!-- <span data-edit="{{.Id}}">[click to edit]</span> -->
                 <!-- <span>created: {{formatTime .Created}}</span><span>LastEdited: {{formatTime .LastEdited}}</span> -->
             </tr>
             {{else}}
-            <div>
-                add some new vocabs
-            </div>
+            <tr>
+                <td>
+                    add some new vocabs
+                </td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+            </tr>
             {{end}}
         </table>
 
@@ -99,13 +103,16 @@ type Vocab struct {
         </div>
         {{end}} -->
 
-        <br><br>
-        <form id="vocab-form">
+        <br>
+        <form id="vocab-form" style="width: 70%; margin: 0 auto;">
             <label for="arabic">Arabic:</label>
-            <input type="text" id="arabic" name="arabic" required>
+            <input type="text" id="arabic" name="arabic" required lang="ar" style="text-align: right;">
 
             <label for="english">English:</label>
             <input type="text" id="english" name="english" required lang="en-US" spellcheck="true">
+
+            <br>
+            <br>
 
             <input type="checkbox" id="harakats" name="harakats" value="true">
             <label for="harakats">Respect Harakats</label>
