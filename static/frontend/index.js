@@ -110,6 +110,7 @@ editVocabs.forEach(e => {
 
         let nd = document.createElement("span");
         nd.innerHTML = okIcon;
+        nd.classList.add("inline-block")
 
         console.log(parent, e, nd)
         icons.replaceChild(nd, e);

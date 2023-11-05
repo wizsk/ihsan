@@ -17,7 +17,12 @@ func Index(w http.ResponseWriter, r *http.Request, db *data.JDB) {
 		},
 	})
 
-	_, err := tmpl.ParseFiles("static/frontend/index.html", "static/frontend/index.js")
+	_, err := tmpl.ParseFiles(
+		"static/frontend/index.html",
+		"static/frontend/index.js",
+		"static/frontend/output.css",
+		"static/frontend/index.tcss",
+	)
 	if err != nil {
 		panic(err)
 	}
